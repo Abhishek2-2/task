@@ -1,0 +1,34 @@
+<?xml version="1.0" ?>
+
+<launch>
+  <!-- Arguments -->
+
+  <!-- map to odom will be provided by the AMCL -->
+  <node pkg="tf" type="static_transform_publisher" name="map_to_odom" args="0 0 0 0 0 0 map odom 30" />
+  <node pkg="tf" type="static_transform_publisher" name="base_link_to_laser" args="0.3 0.0 0.125 1.571 0 0 base_link lidar_link 30" />
+  <arg name="map_file" default="taskmap"/>
+
+
+  <!-- Map server for Map-based Navigation-->
+  <node pkg="map_server" name="map_server" type="map_server" args="$(find ar1_navigation)/maps/$(arg map_file).yaml"/>
+
+    <param name="robot_description" command="$(find xacro)/xacro $(find ar1_description)/urdf/ar1.xacro"/>
+    <node name="spawn_urdf" pkg="gazebo_ros" type="spawn_model" args="-param robot_description -urdf -z 0.1 -model ar1"/>
+    <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" />
+    <node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher">
+        <param name="use_gui" value="False" />
+    </node>
+    <include file="$(find aws_robomaker_small_warehouse_world)/launch/no_roof_small_warehouse.launch" />
+
+    <!-- Rviz-->
+    <node pkg="rviz" name="rviz" type="rviz" args="-d $(find ar1_navigation)/rviz/ar1_navigation.rviz" />
+
+  <include file="$(find ar1_navigation)/launch/amcl.launch"/>
+  <!-- move_base -->
+  <include file="$(find ar1_navigation)/launch/move_base.launch">
+  </include>
+
+
+
+  
+</launch>

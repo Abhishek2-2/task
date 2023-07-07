@@ -1,0 +1,6 @@
+<?xml version="1.0" ?>
+
+<launch>
+    <node pkg="ar1_navigation" name="trajectory_interactive_markers_node" type="marker.py" output="screen"/> 
+    <node pkg="ar1_navigation" name="movebase_client_py" type="waypoint.py" output="screen"/> 
+</launch>
